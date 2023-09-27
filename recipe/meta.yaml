@@ -10,16 +10,19 @@ source:
   sha256: 11774351f72a49c3312a6d5cfb901d1edfe4220d04fba5170b49658df402f935
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  # openai >=0.26.4 isn't available on s390x
+  skip: true  # [s390x]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
   host:
-    - python >=3.6
+    - python
     - pip
+    - setuptools
+    - wheel
   run:
-    - python >=3.6
+    - python
     - tiktoken
     - dataclasses-json
     - langchain >=0.0.293
@@ -39,15 +42,21 @@ requirements:
 test:
   imports:
     - llama_index
-  commands:
-    - pip check
   requires:
     - pip
+  commands:
+    - pip check
 
 about:
   home: https://github.com/jerryjliu/llama_index
+  dev_url: https://github.com/jerryjliu/llama_index
+  doc_url: https://gpt-index.readthedocs.io/
   summary: Interface between LLMs and your data
+  description: |
+    LlamaIndex (formerly GPT Index) is a data framework for LLM applications to ingest, structure, 
+    and access private or domain-specific data.
   license: MIT
+  license_family: MIT
   license_file: LICENSE
 
 extra:
