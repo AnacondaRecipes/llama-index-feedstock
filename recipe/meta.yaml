@@ -1,63 +1,54 @@
 {% set name = "llama-index" %}
-{% set version = "0.8.33" %}
+{% set version = "0.14.13" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/llama_index-{{ version }}.tar.gz
-  sha256: 11774351f72a49c3312a6d5cfb901d1edfe4220d04fba5170b49658df402f935
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/llama_index-{{ version }}.tar.gz
+  sha256: 6392822f8ad0e747da2f0adbfcd170bc91fafdff4341cd50da809feae5ca828a
 
 build:
   number: 0
-  # openai >=0.26.4 isn't available on s390x
-  skip: true  # [s390x]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  skip: true  # [py<310]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   host:
     - python
+    - hatchling
     - pip
-    - setuptools
-    - wheel
   run:
     - python
-    - tiktoken
-    - dataclasses-json
-    - langchain >=0.0.293
-    - sqlalchemy >=2.0.15
-    - numpy
-    - tenacity >=8.2.0,<9.0.0
-    - openai >=0.26.4
-    - pandas
-    - urllib3 <2
-    - fsspec >=2023.5.0
-    - typing_inspect >=0.8.0
-    - typing-extensions >=4.5.0
-    - beautifulsoup4
-    - nest-asyncio
-    - nltk
+    - llama-index-cli >=0.5.0,<0.6
+    - llama-index-core >=0.14.13,<0.15.0
+    - llama-index-embeddings-openai >=0.5.0,<0.6
+    - llama-index-indices-managed-llama-cloud >=0.4.0
+    - llama-index-llms-openai >=0.6.0,<0.7
+    - llama-index-readers-file >=0.5.0,<0.6
+    - llama-index-readers-llama-parse >=0.4.0
+    - nltk >3.8.1
 
 test:
   imports:
     - llama_index
-  requires:
-    - pip
   commands:
     - pip check
+  requires:
+    - pip
 
 about:
-  home: https://github.com/jerryjliu/llama_index
-  dev_url: https://github.com/jerryjliu/llama_index
-  doc_url: https://gpt-index.readthedocs.io/
+  home: https://llamaindex.ai
   summary: Interface between LLMs and your data
   description: |
-    LlamaIndex (formerly GPT Index) is a data framework for LLM applications to ingest, structure, 
-    and access private or domain-specific data.
+    LlamaIndex (formerly GPT Index) is a data framework for LLM applications
+    to ingest, structure, and access private or domain-specific data.
   license: MIT
   license_family: MIT
   license_file: LICENSE
+  doc_url: https://docs.llamaindex.ai/en/stable/
+  dev_url: https://github.com/run-llama/llama_index
 
 extra:
   recipe-maintainers:
