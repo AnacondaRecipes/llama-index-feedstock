@@ -2,11 +2,11 @@
 {% set version = "0.14.22" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/llama_index-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_')}}-{{ version }}.tar.gz
   sha256: c2c9b31f50d2815abdc191085db4acaf96b7c01851ac66b2e4cc82be8cde589e
 
 build:
@@ -21,13 +21,9 @@ requirements:
     - pip
   run:
     - python
-    - llama-index-cli >=0.5.0,<0.6
     - llama-index-core >=0.14.22,<0.15.0
     - llama-index-embeddings-openai >=0.6.0,<0.7
-    - llama-index-indices-managed-llama-cloud >=0.4.0
     - llama-index-llms-openai >=0.7.0,<0.8
-    - llama-index-readers-file >=0.5.0,<0.6
-    - llama-index-readers-llama-parse >=0.4.0
     - nltk >=3.9.3
 
 test:
