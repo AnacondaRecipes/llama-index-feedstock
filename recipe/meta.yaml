@@ -1,17 +1,22 @@
 {% set name = "llama-index" %}
-{% set version = "0.14.13" %}
+{% set version = "0.14.22" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/llama_index-{{ version }}.tar.gz
-  sha256: 6392822f8ad0e747da2f0adbfcd170bc91fafdff4341cd50da809feae5ca828a
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_')}}-{{ version }}.tar.gz
+    sha256: c2c9b31f50d2815abdc191085db4acaf96b7c01851ac66b2e4cc82be8cde589e
+  - url: https://github.com/run-llama/{{ name.replace('-', '_') }}/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 4ca2c7ba705ffd7c4e5b25a7942b2b2524f249651f618570f669ebd39881e939
+    folder: gh_src
 
 build:
   number: 0
-  skip: true  # [py<310]
+  # llama-index-core doesn't support Python 3.14+ because of dataclasses-json, which is unmaintainable anymore,
+  # and does not support Python 3.14+ as well (https://github.com/lidatong/dataclasses-json/issues/568)
+  skip: true # [py<310 or py>313]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
@@ -21,25 +26,75 @@ requirements:
     - pip
   run:
     - python
-    - llama-index-cli >=0.5.0,<0.6
-    - llama-index-core >=0.14.13,<0.15.0
-    - llama-index-embeddings-openai >=0.5.0,<0.6
-    - llama-index-indices-managed-llama-cloud >=0.4.0
-    - llama-index-llms-openai >=0.6.0,<0.7
-    - llama-index-readers-file >=0.5.0,<0.6
-    - llama-index-readers-llama-parse >=0.4.0
-    - nltk >3.8.1
+    - llama-index-core >=0.14.22,<0.15.0
+    - llama-index-embeddings-openai >=0.6.0,<0.7
+    - llama-index-llms-openai >=0.7.0,<0.8
+    - nltk >=3.9.3
+
+# Integration tests are failed in Conda environment
+#AssertionError: assert 'Would bump tests/data/package1 from 1.0.0 to 1.0.1' in 'Would bump gh_src/llama-dev/tests/data/package1 from 1.0.0 to 1.0.1\n'
+#where 'Would bump gh_src/llama-dev/tests/data/package1 from 1.0.0 to 1.0.1\n' = <Result okay>.output
+{% set tests_to_skip = "test_bump_command_specific_packages_dry_run" %}
+{% set tests_to_skip = tests_to_skip + " or test_command_nothing_changed" %}
+# Integration tests are failed in Conda environment
+#where '' = <Result ValueError("'/fake/repo/package1' is not in the subpath of '$SRC_DIR/gh_src/llama-dev/tests/data'")>.stdout
+{% set tests_to_skip = tests_to_skip + " or test_coverage_failures" %}
+{% set tests_to_skip = tests_to_skip + " or test_install_failures" %}
+{% set tests_to_skip = tests_to_skip + " or test_skip_failures_no_tests" %}
+{% set tests_to_skip = tests_to_skip + " or test_skip_failures_unsupported_python" %}
+{% set tests_to_skip = tests_to_skip + " or test_success" %}
+# Integration tests are failed in Conda environment
+#assert <ResultStatus.NO_TESTS: 4> == <ResultStatus.INSTALL_FAILED: 1>
+#where <ResultStatus.INSTALL_FAILED: 1> = ResultStatus.INSTALL_FAILED
+{% set tests_to_skip = tests_to_skip + " or test_install_dependencies_failure" %}
+{% set tests_to_skip = tests_to_skip + " or test_install_local_packages_failure" %}
+{% set tests_to_skip = tests_to_skip + " or test_pytest_failure " %}
+{% set tests_to_skip = tests_to_skip + " or test_coverage_failure" %}
+{% set tests_to_skip = tests_to_skip + " or test_successful_run" %}
+{% set tests_to_skip = tests_to_skip + " or test_successful_run_with_coverage" %}
+{% set tests_to_skip = tests_to_skip + " or test_version" %}
+
+# Failed on CI in Conda environment
+{% set tests_to_skip = tests_to_skip + " or test_bump_command_with_all_flag" %}
+{% set tests_to_skip = tests_to_skip + " or test_bump_command_specific_packages" %}
+{% set tests_to_skip = tests_to_skip + " or test_bump_command_specific_packages_not_a_package" %}
+{% set tests_to_skip = tests_to_skip + " or test_cmd_exec_invalid_package" %}
+{% set tests_to_skip = tests_to_skip + " or test_cmd_exec_all_flag" %}
+{% set tests_to_skip = tests_to_skip + " or test_cmd_exec_single_package_success" %}
+{% set tests_to_skip = tests_to_skip + " or test_cmd_exec_failure_without_fail_fast" %}
+{% set tests_to_skip = tests_to_skip + " or test_cmd_exec_failure_with_fail_fast" %}
+{% set tests_to_skip = tests_to_skip + " or test_cmd_exec_multiple_packages" %}
+{% set tests_to_skip = tests_to_skip + " or test_cmd_exec_silent" %}
+{% set tests_to_skip = tests_to_skip + " or test_info_with_package_names" %}
+{% set tests_to_skip = tests_to_skip + " or test_info_with_all_flag" %}
+{% set tests_to_skip = tests_to_skip + " or test_info_invalid_package" %}
+{% set tests_to_skip = tests_to_skip + " or test_command_pr_fetch_failed" %}
+{% set tests_to_skip = tests_to_skip + " or test_command_dry_run" %}
+{% set tests_to_skip = tests_to_skip + " or test_command_success" %}
+{% set tests_to_skip = tests_to_skip + " or test_get_latest_tag" %}
+{% set tests_to_skip = tests_to_skip + " or test_get_pr_numbers" %}
+{% set tests_to_skip = tests_to_skip + " or test_extract_pr_data" %}
+{% set tests_to_skip = tests_to_skip + " or test_check_command" %}
+{% set tests_to_skip = tests_to_skip + " or test__pytest" %}
+{% set tests_to_skip = tests_to_skip + " or test_get_dependants_packages" %}
+
 
 test:
+  source_files:
+    - gh_src/llama-dev/
   imports:
     - llama_index
   commands:
     - pip check
+    - pytest -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" gh_src/llama-dev/tests/
   requires:
     - pip
+    - pytest >=8.2.1
+    - rich >=13.10.0,<15.0.0
+    - tomli >=2.2.1,<3.0.0
 
 about:
-  home: https://llamaindex.ai
+  home: https://www.llamaindex.ai/
   summary: Interface between LLMs and your data
   description: |
     LlamaIndex (formerly GPT Index) is a data framework for LLM applications
@@ -47,7 +102,7 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  doc_url: https://docs.llamaindex.ai/en/stable/
+  doc_url: https://developers.llamaindex.ai/python/framework/
   dev_url: https://github.com/run-llama/llama_index
 
 extra:
