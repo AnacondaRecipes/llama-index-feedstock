@@ -36,11 +36,6 @@ requirements:
 #where 'Would bump gh_src/llama-dev/tests/data/package1 from 1.0.0 to 1.0.1\n' = <Result okay>.output
 # Integration tests are failed in Conda environment
 #where '' = <Result ValueError("'/fake/repo/package1' is not in the subpath of '$SRC_DIR/gh_src/llama-dev/tests/data'")>.stdout
-# Integration tests are failed in Conda environment
-#assert <ResultStatus.NO_TESTS: 4> == <ResultStatus.INSTALL_FAILED: 1>
-#where <ResultStatus.INSTALL_FAILED: 1> = ResultStatus.INSTALL_FAILED
-# Failed on CI in Conda environment
-
 {% set tests_to_skip = "test_bump_command_specific_packages_dry_run" %}
 {% set tests_to_skip = tests_to_skip + " or test_command_nothing_changed" %}
 {% set tests_to_skip = tests_to_skip + " or test_coverage_failures" %}
@@ -48,6 +43,9 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_skip_failures_no_tests" %}
 {% set tests_to_skip = tests_to_skip + " or test_skip_failures_unsupported_python" %}
 {% set tests_to_skip = tests_to_skip + " or test_success" %}
+# Integration tests are failed in Conda environment
+#assert <ResultStatus.NO_TESTS: 4> == <ResultStatus.INSTALL_FAILED: 1>
+#where <ResultStatus.INSTALL_FAILED: 1> = ResultStatus.INSTALL_FAILED
 {% set tests_to_skip = tests_to_skip + " or test_install_dependencies_failure" %}
 {% set tests_to_skip = tests_to_skip + " or test_install_local_packages_failure" %}
 {% set tests_to_skip = tests_to_skip + " or test_pytest_failure " %}
@@ -55,6 +53,7 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_successful_run" %}
 {% set tests_to_skip = tests_to_skip + " or test_successful_run_with_coverage" %}
 {% set tests_to_skip = tests_to_skip + " or test_version" %}
+# Failed on CI in Conda environment
 {% set tests_to_skip = tests_to_skip + " or test_bump_command_with_all_flag" %}
 {% set tests_to_skip = tests_to_skip + " or test_bump_command_specific_packages" %}
 {% set tests_to_skip = tests_to_skip + " or test_bump_command_specific_packages_not_a_package" %}
