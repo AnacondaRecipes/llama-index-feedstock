@@ -14,9 +14,7 @@ source:
 
 build:
   number: 0
-  # llama-index-core doesn't support Python 3.14+ because of dataclasses-json, which is unmaintainable anymore,
-  # and does not support Python 3.14+ as well (https://github.com/lidatong/dataclasses-json/issues/568)
-  skip: true  # [py<310 or py>313]
+  skip: true  # [py<310]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
