@@ -1,5 +1,5 @@
 {% set name = "llama-index" %}
-{% set version = "0.14.22" %}
+{% set version = "0.14.24" %}
 
 package:
   name: {{ name }}
@@ -7,16 +7,14 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_')}}-{{ version }}.tar.gz
-    sha256: c2c9b31f50d2815abdc191085db4acaf96b7c01851ac66b2e4cc82be8cde589e
+    sha256: 9574d3dbd6ba247bd523e78771647807794cce9a47410dbc70ed337bb610a6ff
   - url: https://github.com/run-llama/{{ name.replace('-', '_') }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 4ca2c7ba705ffd7c4e5b25a7942b2b2524f249651f618570f669ebd39881e939
+    sha256: b80b8ab7fc37b88c715134d195e6f84d88758e0fe0eda1bc643713ea70933946
     folder: gh_src
 
 build:
   number: 0
-  # llama-index-core doesn't support Python 3.14+ because of dataclasses-json, which is unmaintainable anymore,
-  # and does not support Python 3.14+ as well (https://github.com/lidatong/dataclasses-json/issues/568)
-  skip: true # [py<310 or py>313]
+  skip: true  # [py<310]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
@@ -34,10 +32,10 @@ requirements:
 # Integration tests are failed in Conda environment
 #AssertionError: assert 'Would bump tests/data/package1 from 1.0.0 to 1.0.1' in 'Would bump gh_src/llama-dev/tests/data/package1 from 1.0.0 to 1.0.1\n'
 #where 'Would bump gh_src/llama-dev/tests/data/package1 from 1.0.0 to 1.0.1\n' = <Result okay>.output
-{% set tests_to_skip = "test_bump_command_specific_packages_dry_run" %}
-{% set tests_to_skip = tests_to_skip + " or test_command_nothing_changed" %}
 # Integration tests are failed in Conda environment
 #where '' = <Result ValueError("'/fake/repo/package1' is not in the subpath of '$SRC_DIR/gh_src/llama-dev/tests/data'")>.stdout
+{% set tests_to_skip = "test_bump_command_specific_packages_dry_run" %}
+{% set tests_to_skip = tests_to_skip + " or test_command_nothing_changed" %}
 {% set tests_to_skip = tests_to_skip + " or test_coverage_failures" %}
 {% set tests_to_skip = tests_to_skip + " or test_install_failures" %}
 {% set tests_to_skip = tests_to_skip + " or test_skip_failures_no_tests" %}
@@ -53,7 +51,6 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_successful_run" %}
 {% set tests_to_skip = tests_to_skip + " or test_successful_run_with_coverage" %}
 {% set tests_to_skip = tests_to_skip + " or test_version" %}
-
 # Failed on CI in Conda environment
 {% set tests_to_skip = tests_to_skip + " or test_bump_command_with_all_flag" %}
 {% set tests_to_skip = tests_to_skip + " or test_bump_command_specific_packages" %}
@@ -77,7 +74,6 @@ requirements:
 {% set tests_to_skip = tests_to_skip + " or test_check_command" %}
 {% set tests_to_skip = tests_to_skip + " or test__pytest" %}
 {% set tests_to_skip = tests_to_skip + " or test_get_dependants_packages" %}
-
 
 test:
   source_files:
